@@ -120,7 +120,7 @@ function scrape5DayForecast($key){
     $visibility = $tds->item($start+6)->nodeValue;
     $windURI =  $forecastURI.'/wind';
     $graph->add_resource_triple($forecastURI, RDF_TYPE, meteo.'Forecast');
-    $graph->add_literal_triple($forecastURI, RDFS_LABEL, "Forecast for {$locationName} for {$time} on {$date}, forecast at $dateTimeNow", 'en-gb');
+    $graph->add_literal_triple($forecastURI, RDFS_LABEL, "Forecast for {$locationName} for {$time} on {$date}, forecast at $modified", 'en-gb');
     $graph->add_resource_triple($forecastURI, meteo.'location', $locationURI); 
     $graph->add_literal_triple($forecastURI, dct.'created',$modified, false, xsd.'dateTime');
     $graph->add_resource_triple($forecastURI, meteo.'time', $timeURI);
