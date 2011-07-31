@@ -1,0 +1,13 @@
+<> a owl:Ontology ;
+	dct:creator <http://keithalexander.co.uk/id/me> ;
+	rdfs:label "Weather Vocabulary" ;
+	vann:preferredNamespacePrefix "weather" ;
+	vann:preferredNamespaceUri weather: 
+	.
+	
+weather:forecastPage
+	a rdf:Property ;
+	rdfs:domain geonames:Feature ;
+	rdfs:range foaf:Document ;
+	rdfs:subPropertyOf foaf:page
+	 .

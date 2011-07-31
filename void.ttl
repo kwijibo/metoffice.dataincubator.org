@@ -1,0 +1,52 @@
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix void: <http://rdfs.org/ns/void#> .
+@prefix : <#> .
+
+## your dataset
+<http://metoffice.dataincubator.org/> rdf:type void:Dataset ;
+ foaf:homepage <http://metoffice.dataincubator.org/.html> ;
+ dcterms:title "MET Office" ;
+ dcterms:description "A sample Linked Data representation of MET Office data.  " ;
+ dcterms:publisher <http://keithalexander.co.uk/id/me> ;
+ dcterms:source <http://www.metoffice.gov.uk> ;
+ void:sparqlEndpoint <http://api.talis.com/stores/metoffice/services/sparql> ;
+ void:uriLookupEndpoint <http://api.talis.com/stores/metoffice/meta?about=> ;
+ void:vocabulary <http://purl.org/dc/terms/> ;
+ void:vocabulary <http://purl.org/ns/meteo#> ;
+ void:vocabulary <http://purl.org/net/compass#> ;
+ void:vocabulary <http://www.w3.org/2004/02/skos/core#> ;
+ void:exampleResource <http://metoffice.dataincubator.org/categories/HeavyRain> ;
+ void:exampleResource <http://metoffice.dataincubator.org/areas/kirkwall/forecast/from/2010-11-13T08:37:00/for/2010-11-13T12:00:00> ;
+ dcterms:subject <http://dbpedia.org/ontology/Organisation> ;
+ dcterms:subject <http://dbpedia.org/resource/Meteorology> ;
+ dcterms:subject <http://dbpedia.org/resource/2000_United_States_Census> ;
+ void:subset :myDS-DS1 ;
+ void:subset :myDS-DS2 .
+
+## datasets you link to
+
+# interlinking to :DS1
+:DS1 rdf:type void:Dataset ;
+ foaf:homepage <http://dbpedia.org/> ;
+ dcterms:title "DBpedia" ;
+ dcterms:description "Linked Data version of Wikipedia." ; 
+ void:exampleResource <http://dbpedia.org/resource/Ludwig_van_Beethoven> .
+
+:myDS-DS1 rdf:type void:Linkset ;
+ void:linkPredicate <http://www.w3.org/2002/07/owl#sameAs> ;
+ void:target <http://metoffice.dataincubator.org/> ;
+ void:target :DS1 .
+
+# interlinking to :DS2
+:DS2 rdf:type void:Dataset ;
+ foaf:homepage <http://geonames.org/> ;
+ dcterms:title "Geonames" ;
+ dcterms:description "Geographical Data" . 
+
+:myDS-DS2 rdf:type void:Linkset ;
+ void:linkPredicate <http://www.w3.org/2002/07/owl#sameAs> ;
+ void:target <http://metoffice.dataincubator.org/> ;
+ void:target :DS2 .

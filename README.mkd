@@ -1,0 +1,4 @@
+#Metoffice Dataincubator Linked Data Conversion Code
+
+This is the code the converts weather forecasts from the MET Office to
+Linked Data, hosted at  http://metoffice.dataincubator.org
