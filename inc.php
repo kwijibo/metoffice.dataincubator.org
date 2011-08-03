@@ -4,7 +4,7 @@ define('URISPACE', 'http://metoffice.dataincubator.org/');
 define('AREAS', URISPACE.'areas/');
 define('DCT', 'http://purl.org/dc/terms/');
 define('MET', URISPACE.'vocabs/metoffice/');
-define('WEATHER', 'http://purl.org/weather#');
+define('WEATHER', 'http://purl.org/net/meteo#');
 define('FOAF', 'http://xmlns.com/foaf/0.1/');
 define('GEO', 'http://www.w3.org/2003/01/geo/wgs84_pos#');
 define('OS', 'http://data.ordnancesurvey.co.uk/ontology/spatialrelations/');
