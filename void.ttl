@@ -4,6 +4,8 @@
 @prefix dcterms: <http://purl.org/dc/terms/> .
 @prefix void: <http://rdfs.org/ns/void#> .
 @prefix : <http://metoffice.dataincubator.org/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+
 
 ## your dataset
 <http://metoffice.dataincubator.org/> rdf:type void:Dataset ;
@@ -14,33 +16,31 @@
  dcterms:source <http://www.metoffice.gov.uk> ;
  void:sparqlEndpoint <http://api.talis.com/stores/metoffice/services/sparql> ;
  void:uriLookupEndpoint <http://api.talis.com/stores/metoffice/meta?about=> ;
- void:vocabulary <http://purl.org/dc/terms/> ;
- void:vocabulary <http://purl.org/ns/meteo#> ;
- void:vocabulary <http://purl.org/net/compass#> ;
- void:vocabulary <http://www.w3.org/2004/02/skos/core#> ;
+
+ void:vocabulary  <http://purl.org/ns/meteo#> ,
+                  <http://purl.org/net/compass#> ,
+                  <http://www.w3.org/2004/02/skos/core#> ,
+                  <http://metoffice.dataincubator.org/vocabs/metoffice/>, 
+                  dcterms: ;
+
  void:exampleResource <http://metoffice.dataincubator.org/categories/HeavyRain> ;
  void:exampleResource <http://metoffice.dataincubator.org/areas/os/lerwick/forecast/from/2011-08-01T07:39:00+00:00/for/2011-08-04/Day> ;
  void:exampleResource <http://metoffice.dataincubator.org/areas/os/lerwick> ;
  dcterms:subject <http://dbpedia.org/resource/Meteorology> ;
- void:subset :linkset-dbpedia ;
+# void:subset :linkset-dbpedia ;
  void:subset :linkset-geonames ;
  void:subset :linkset-ordnancesurvey ;
  rdfs:seeAlso <https://github.com/kwijibo/metoffice.dataincubator.org> ;
  .
+<http://keithalexander.co.uk/id/me> foaf:name "Keith Alexander" .
+
 
 ## datasets you link to
 
-# interlinking to :DS1
-<http://ckan.net/package/dbpedia> rdf:type void:Dataset ;
- foaf:homepage <http://dbpedia.org/> ;
- dcterms:title "DBpedia" ;
- dcterms:description "Linked Data version of Wikipedia." ; 
- void:exampleResource <http://dbpedia.org/resource/Ludwig_van_Beethoven> .
-
-:dbpedia-linkset rdf:type void:Linkset ;
- void:linkPredicate <http://www.w3.org/2002/07/owl#sameAs> ;
- void:target <http://metoffice.dataincubator.org/> ;
- void:target <http://ckan.net/package/dbpedia> .
+#:linkset-dbpedia rdf:type void:Linkset ;
+# void:linkPredicate <http://www.w3.org/2002/07/owl#sameAs> ;
+# void:target <http://metoffice.dataincubator.org/> ;
+# void:target <http://ckan.net/package/dbpedia> .
 
 # interlinking to :DS2
 <http://ckan.net/package/geonames>  a void:Dataset ;
@@ -48,13 +48,17 @@
  dcterms:title "Geonames" ;
  dcterms:description "Geographical Data" . 
 
-:geonames-linkset rdf:type void:Linkset ;
+:linkset-geonames rdf:type void:Linkset ;
+ rdfs:label "Links between metoffice and geonames"@en-gb ;
  void:linkPredicate <http://www.w3.org/2002/07/owl#sameAs> ;
  void:target <http://metoffice.dataincubator.org/> ;
- void:target <http://ckan.net/package/dbpedia>  .
+ void:target <http://ckan.net/package/dbpedia> ;
+ void:triples 348  ;
+ .
 
 :linkset-ordnancesurvey 
   dcterms:description "These links were generated using the SILK linking framework. "@en-gb ;
+  rdfs:label "Links between metoffice and ordnance-survey"@en-gb ;
   a void:Linkset ;
   void:linkPredicate owl:sameAs ;
   void:subjectsTarget  <http://metoffice.dataincubator.org/> ;

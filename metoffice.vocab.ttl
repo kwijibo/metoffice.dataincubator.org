@@ -8,46 +8,58 @@
 @prefix spatialrelations: <http://data.ordnancesurvey.co.uk/ontology/spatialrelations/> .
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
 @prefix met: <http://metoffice.dataincubator.org/vocabs/metoffice/> .
-@base <http://metoffice.dataincubator.org/vocabs/metoffice/> .
+@prefix ov: <http://open.vocab.org/terms/> .
 
-<> 
-	a owl:Ontology ;
-	dct:creator <http://keithalexander.co.uk/id/me> ;
-	rdfs:label "Met Office Vocabulary" 
-	.
+<http://metoffice.dataincubator.org/vocabs/metoffice/>
+    dct:creator <http://keithalexander.co.uk/id/me> ;
+    a owl:Ontology ;
+    rdfs:label "Met Office Vocabulary" ;
+    ov:defines 
+                met:identifier ,   
+                met:MetOfficeRegion, 
+                met:MetOfficeObservationSite , 
+                met:MetOfficeLocation ,
+                met:nearestObservationSite 
+                .
 
-<metOfficeRegion> 
-	a rdfs:Class ;
-	rdfs:isDefinedBy <> ;
-	rdfs:subClassOf geo:SpatialThing  ;
-	rdfs:label "Met Office Region"@en ;
-	rdfs:comment "A geographical region as used by the Met Office for declaring the spatial extent of their forecasts"@en
-	.
+met:identifier
+    a rdf:Property ;
+    rdfs:comment "a key used to identify a region or location by the Met Office website"@en ;
+    rdfs:label "identifer" ;
+    rdfs:subPropertyOf dct:identifier ;
+    rdfs:isDefinedBy met: .
 
-<metOfficeLocation> 
-	a rdfs:Class ;
-	rdfs:subClassOf geo:SpatialThing  ;
-	rdfs:label "Met Office Location"@en ;
-	rdfs:comment "A geographical location as used by the Met Office for declaring the spatial extent of their forecasts; contained within a met:metofficeRegion "@en
-	.
+met:MetOfficeLocation
+    a rdfs:Class ;
+    rdfs:comment "A geographical location as used by the Met Office for declaring the spatial extent of their forecasts; contained within a met:MetofficeRegion "@en ;
+    rdfs:label "Met Office Location"@en ;
+    rdfs:subClassOf geo:SpatialThing ;
+    rdfs:isDefinedBy met: .
 
-
-<metOfficeObservationSite>	
-	a rdfs:Class ;
-	rdfs:isDefinedBy <> ;
-	rdfs:subClassOf geo:SpatialThing  ;
-	rdfs:label "Met Office Observation Site"@en ;
-	rdfs:comment "A site where Met Office records weather observations."@en ;
-	.
-
-<identifier> 
-	a rdf:Property ;
-	rdfs:subPropertyOf dct:identifier ;
-	rdfs:label "identifer" ;
-	rdfs:comment "a key used to identify a region or location by the Met Office website"@en 
-	.
-<nearestObservationSite>
-	a rdf:Property ;
-	rdfs:label "Nearest Observation Site"@en ;
-	rdfs:comment "a key used to identify a region or location by the Met Office website"@en 
+met:MetOfficeObservationSite
+    a rdfs:Class ;
+    rdfs:comment "A site where Met Office records weather observations."@en ;
+    rdfs:isDefinedBy <http://metoffice.dataincubator.org/vocabs/metoffice/> ;
+    rdfs:label "Met Office Observation Site"@en ;
+    rdfs:subClassOf geo:SpatialThing ;
+    rdfs:isDefinedBy met: 
 .
+
+met:MetOfficeRegion
+    a rdfs:Class ;
+    rdfs:comment "A geographical region as used by the Met Office for declaring the spatial extent of their forecasts"@en ;
+    rdfs:isDefinedBy <http://metoffice.dataincubator.org/vocabs/metoffice/> ;
+    rdfs:label "Met Office Region"@en ;
+    rdfs:subClassOf geo:SpatialThing  ;
+.
+
+met:nearestObservationSite
+    a rdf:Property ;
+    rdfs:comment "The closest Met Office Observation site"@en ;
+    rdfs:label "Nearest Observation Site"@en ;
+    rdfs:domain rdfs:Resource ;
+    rdfs:range met:MetOfficeObservationSite  ;
+    rdfs:isDefinedBy met:
+  .
+
+

@@ -19,6 +19,7 @@ define('admingov','http://statistics.data.gov.uk/def/administrative-geography/')
 define('metvis','http://metoffice.dataincubator.org/categories/visibility/');
 define('metcat','http://metoffice.dataincubator.org/categories/');
 define('metareas', 'http://metoffice.dataincubator.org/areas/');
+define('metobv', 'http://metoffice.dataincubator.org/observation-sites/');
 define('met_celc', 'http://metoffice.dataincubator.org/temperatures/celcius/');
 define('compass','http://purl.org/net/compass#');
 define('scv', 'http://purl.org/NET/scovo#');
@@ -47,6 +48,7 @@ function scrape5DayForecast($key){
   $xpath = new DomXpath($dom);
 
 
+  
   $lastUpdated = $xpath->query('//div[@class="tableWrapper"]//table//tr[position()=last()]')->item(0)->textContent;
   $modified = str_replace(' on ', ' ', str_replace('Last updated: ','',$lastUpdated));
   $modified = preg_replace('/(\d\d)(\d\d)(.+)/','$3 $1$2',$modified);
@@ -55,11 +57,33 @@ function scrape5DayForecast($key){
   $forecastURI_base = $locationURI.'/forecast/from/'.$modified.'/for/';
 
   $graph = new SimpleGraph();
+
+
   $siteInfo = $xpath->query('//div[@id="siteInfo"]')->item(0)->textContent;
   preg_match('/Latitude: (.+?); Longitude: ([\-0-9\.]+)/', $siteInfo, $siteInfoRegexMatches);
 
   $latitude = $siteInfoRegexMatches[1];
   $longitude = $siteInfoRegexMatches[2];
+
+  $nearestObservationSiteLink = $xpath->query('//div[@id="siteInfo"]/a[position()=last()]')->item(0);
+  $href = $nearestObservationSiteLink->getAttribute('href');
+ $shortName = str_replace('_latest_weather.html','',$href);
+  $areaCode  = array_shift(explode('/',$key));
+  $distance = trim(preg_replace('/\(([\d\.]+) km\).+/', '$1', $nearestObservationSiteLink->nextSibling->textContent));
+  $nearestObservationSiteUri = metobv.$areaCode.'/'.$shortName;
+  $distanceUri = $nearestObservationSiteUri.'/distance-to-forecast-location/'.array_pop(explode('/',$key));  
+  $graph->add_resource_triple($locationURI, met.'nearestObservationSite', $nearestObservationSiteUri);
+  $graph->add_literal_triple($nearestObservationSiteUri, RDFS_LABEL, $nearestObservationSiteLink->textContent, 'en');
+  $graph->add_resource_triple($nearestObservationSiteUri, foaf.'page', "http://www.metoffice.gov.uk/weather/uk/{$areaCode}/{$shortName}_latest_weather.html" );
+  $graph->add_resource_triple($nearestObservationSiteUri, RDF_TYPE, met.'MetOfficeObservationSite' );
+  $graph->add_literal_triple($locationURI, geo.'lat', $latitude, false, xsd.'float');
+  $graph->add_literal_triple($locationURI, geo.'long', $longitude, false, xsd.'float');
+  $graph->add_resource_triple($distanceUri, RDF_TYPE, ov.'Distance');
+  $graph->add_resource_triple($distanceUri, ov.'distancePoint', $nearestObservationSiteUri);
+  $graph->add_resource_triple($distanceUri, ov.'distancePoint', $locationURI);
+  $graph->add_literal_triple($distanceUri, ov.'kilometres', $distance, null, xsd.'decimal');
+  $graph->add_resource_triple($locationURI, ov.'distance', $distanceUri);
+  $graph->add_resource_triple($nearestObservationSiteUri, ov.'distance', $distanceUri);
 
 
   foreach($xpath->query('//td[@scope="row"]') as $no => $td){
@@ -129,13 +153,12 @@ function scrape5DayForecast($key){
     $graph->add_resource_triple($forecastURI, meteo.'temperature', met_celc.slug(($temperature)));
     $graph->add_literal_triple(met_celc.slug($temperature), meteo.'celsius', ($temperature), false, xsd.'integer');
     $graph->add_resource_triple($forecastURI, meteo.'wind',$windURI);
+    $graph->add_resource_triple('http://metoffice.dataincubator.org/areas/'.$key.'/forecast-channel', FOAF.'topic', $forecastURI);
     $graph->add_resource_triple($windURI, compass.'comingFrom', compass.slug($windDirection));
     $graph->add_resource_triple($windURI, meteo.'speed', $windURI.'/speed');
     $graph->add_resource_triple($windURI, meteo.'gust-speed', $windURI.'/gust-speed');
     $graph->add_literal_triple($windURI.'/speed', meteo.'milesPerHour', $windSpeed, false, xsd.'integer');
     $graph->add_literal_triple($windURI.'/gust-speed', meteo.'milesPerHour', $gustSpeed, false, xsd.'integer');
-    $graph->add_literal_triple($locationURI, geo.'lat', $latitude, false, xsd.'float');
-    $graph->add_literal_triple($locationURI, geo.'long', $longitude, false, xsd.'float');
     $graph->add_resource_triple(metvis.slug($visibility), RDF_TYPE, met.'VisibilityAssessment');
     $graph->add_literal_triple(metvis.slug($visibility), RDFS_LABEL, $visibility, 'en-gb');
 
@@ -156,6 +179,7 @@ function scrape5DayForecast($key){
 //    var_dump(date('c', strtotime($time.' '.$date)), $time, date('c',strtotime($time)));
   
   }
+  $graph->add_resource_triple('http://metoffice.dataincubator.org/areas/'.$key.'/forecast-channel', DCT.'source', $url);
   $graph->add_literal_triple(met.'variable-wind-direction' , RDFS_LABEL , 'Variable Wind Direction', 'en-gb');
   $graph->add_literal_triple(met.'variable-wind-direction' , RDFS_COMMENT , 'Variable Wind Direction; when the wind does not prevail from one particular direction.', 'en-gb');
   return $graph->to_turtle();
