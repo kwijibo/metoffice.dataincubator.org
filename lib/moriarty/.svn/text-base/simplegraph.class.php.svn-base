@@ -12,6 +12,7 @@ class SimpleGraph {
   var $_image_properties =  array( 'http://xmlns.com/foaf/0.1/depiction', 'http://xmlns.com/foaf/0.1/img');
   var $_property_order =  array('http://www.w3.org/2004/02/skos/core#prefLabel', RDFS_LABEL, 'http://purl.org/dc/terms/title', DC_TITLE, FOAF_NAME, 'http://www.w3.org/2004/02/skos/core#definition', RDFS_COMMENT, 'http://purl.org/dc/terms/description', DC_DESCRIPTION, 'http://purl.org/vocab/bio/0.1/olb', RDF_TYPE);
   var $request_factory = false;
+  var $parser_errors = array();
   protected $_ns = array (
                     'rdf' => 'http://www.w3.org/1999/02/22-rdf-syntax-ns#',
                     'rdfs' => 'http://www.w3.org/2000/01/rdf-schema#',
@@ -242,7 +243,22 @@ class SimpleGraph {
     return json_encode($this->_index);
   }
 
+  function get_valid_id($s) {
+    return htmlspecialchars(str_replace('_:','',$s));	
+  }
+  
+  function get_link_href($s) {
+  	$prefix = (strpos($s,'_:')===0) ? '#' : '';
+  	return $prefix . $this->get_valid_id($s);
+  }
 
+  function get_link_id($s) {
+  	if (strpos($s,'_:')===0) {
+  		return $this->get_valid_id($s);
+  	}
+  	return null;
+  }
+  
   /**
    * Serialise the graph to HTML
    * @return string a HTML version of the graph
@@ -274,7 +290,11 @@ class SimpleGraph {
     if (count($subjects) > 0) {
       foreach ($subjects as $subject) {
         if (count($subjects) > 1) {
-          $h .= '<h1><a href="' . htmlspecialchars($subject) . '">' . htmlspecialchars($this->get_label($subject)) . '</a></h1>' . "\n";
+          $h .= '<h1><a';
+          if($link_id = $this->get_link_id($subject)) {
+          	$h .= ' id="' . $link_id . '"';
+          }	
+          $h .= ' href="' . $this->get_link_href($subject) . '">' . htmlspecialchars($this->get_label($subject)) . '</a></h1>' . "\n";
         }
         $h .= '<table>' . "\n";
 
@@ -283,7 +303,7 @@ class SimpleGraph {
         $properties = array_merge($priority_properties, array_diff($properties, $priority_properties));
 
         foreach ($properties as $p) {
-          $h .= '<tr><th valign="top"><a href="' . htmlspecialchars($p). '">' . htmlspecialchars($this->get_label($p, true)). '</a></th>';
+          $h .= '<tr><th valign="top"><a href="' . $this->get_link_href($p). '">' . htmlspecialchars($this->get_label($p, true)). '</a></th>';
           $h .= '<td valign="top">';
           for ($i = 0; $i < count($this->_index[$subject][$p]); $i++) {
             if ($i > 0) $h .= '<br />';
@@ -291,7 +311,7 @@ class SimpleGraph {
               $h .= htmlspecialchars($this->_index[$subject][$p][$i]['value'] );
             }
             else {
-              $h .= '<a href="' . htmlspecialchars($this->_index[$subject][$p][$i]['value']). '">';
+              $h .= '<a href="' . $this->get_link_href($this->_index[$subject][$p][$i]['value']). '">';
               if ($guess_labels) {
                 $h .= htmlspecialchars($this->get_label($this->_index[$subject][$p][$i]['value']) );
               }
@@ -321,12 +341,12 @@ class SimpleGraph {
         }
         
         foreach ($backlinks as $backlink_p => $backlink_values) {
-          $h .= '<tr><th valign="top"><a href="' . htmlspecialchars($backlink_p). '">' . htmlspecialchars($this->get_inverse_label($backlink_p, true)). '</a></th>';
+          $h .= '<tr><th valign="top"><a href="' . $this->get_link_href($backlink_p). '">' . htmlspecialchars($this->get_inverse_label($backlink_p, true)). '</a></th>';
           $h .= '<td valign="top">';
           for ($i = 0; $i < count($backlink_values); $i++) {
             if ($i > 0) $h .= '<br />';
 
-            $h .= '<a href="' . htmlspecialchars($backlink_values[$i]). '">';
+            $h .= '<a href="' . $this->get_link_href($backlink_values[$i]). '">';
             if ($guess_labels) {
               $h .= htmlspecialchars($this->get_label($backlink_values[$i]) );
             }
@@ -505,6 +525,9 @@ class SimpleGraph {
     }
   }
 
+  function get_parser_errors(){
+    return $this->parser_errors;
+  }
   /**
    * Add the triples parsed from the supplied RDF to the graph - let ARC guess the input
    * @param string rdf the RDF to parse
@@ -513,10 +536,20 @@ class SimpleGraph {
    */
   function add_rdf($rdf=false, $base='') {
     if ($rdf) {
-      $parser = ARC2::getRDFParser();
-      $parser->parse($base, $rdf);
-      $this->_add_arc2_triple_list($parser->getTriples());
-      unset($parser);
+        $trimRdf = trim($rdf);
+     if($trimRdf[0]=='{'){ //lazy is-this-json assessment  - might be better to try json_decode - but more costly
+         $this->add_json($trimRdf);
+         unset($trimRdf);
+     } else {
+          $parser = ARC2::getRDFParser();
+          $parser->parse($base, $rdf);
+          $errors = $parser->getErrors();
+          if(!empty($errors)){
+            $this->parser_errors[]=$errors;
+          }
+          $this->_add_arc2_triple_list($parser->getTriples());
+          unset($parser);
+        }
     }
   }
 
@@ -562,6 +595,32 @@ class SimpleGraph {
     }
   }
 
+
+  /**
+   * Replace the triples in the graph with those parsed from the supplied RDFa
+   * @param string html the HTML containing RDFa to parse
+   * @param string base the base URI against which relative URIs in the Turtle document will be resolved
+   */
+  function from_rdfa($html, $base='') {
+    if ($html) {
+      $this->remove_all_triples();
+      $this->add_rdfa($html, $base);
+    }
+  }
+  /**
+   * Add the triples parsed from the supplied RDFa to the graph
+   * @param string html the HTML containing RDFa to parse
+   * @param string base the base URI against which relative URIs in the Turtle document will be resolved
+   */
+  function add_rdfa($html, $base='') {
+    if ($html) {
+      $parser = ARC2::getSemHTMLParser();
+      $parser->parse($base, $html );
+      $parser->extractRDF('rdfa');    
+      $this->_add_arc2_triple_list($parser->getTriples());
+      unset($parser);
+    }
+  }
 
   /**
    * Add the triples in the supplied graph to the current graph
@@ -1035,7 +1094,16 @@ class SimpleGraph {
               }
               else {
                 foreach($base_obs as $base_o){
-                  if(!in_array($base_o, $index[$base_uri][$base_p])) {
+                  // because we want to enforce strict type check
+                  // on in_array, we need to ensure that array keys
+                  // are ordered the same
+                  ksort($base_o);
+                  $base_p_values = $index[$base_uri][$base_p];
+                  foreach($base_p_values as &$v)
+                  {
+                      ksort($v);
+                  }
+                  if(!in_array($base_o, $base_p_values, true)) {
                     $diff[$base_uri][$base_p][]=$base_o;
                   }
                 }
@@ -1323,5 +1391,38 @@ class SimpleGraph {
           return $values;
       }
 
-}
+  /** Skolemise Bnodes
+   *  replace bnodes in the graph with URIs
+   * @param urispace 
+  **/
 
+      public function skolemise_bnodes($urispace)
+      {
+        $bnodes = $this->get_bnodes();
+        $skolemised_bnodes = array();
+        foreach($bnodes as $no => $bnode){
+          $uri = $urispace.'id-'.++$no;
+          $this->replace_resource($bnode, $uri);
+          $skolemised_bnodes[$bnode] = $uri;
+        }
+        return $skolemised_bnodes; 
+      }
+
+      public function get_bnodes()
+      {
+        $bnodes = array();
+        $index = $this->get_index();
+        foreach($index as $s => $ps){
+          if(strpos($s,'_:')===0) $bnodes[]=$s;
+          foreach($ps as $p => $os){
+            foreach($os as $o){
+              if($o['type']=='bnode'){
+                $bnodes[]=$o['value'];
+              }
+            }
+          }
+        }
+        return array_unique($bnodes);
+      }
+}
+?>

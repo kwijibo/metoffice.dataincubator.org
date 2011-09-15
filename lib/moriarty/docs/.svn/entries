@@ -1,7 +1,7 @@
-8
+10
 
 dir
-281
+322
 https://moriarty.googlecode.com/svn/trunk/docs
 https://moriarty.googlecode.com/svn
 
@@ -12,7 +12,7 @@ https://moriarty.googlecode.com/svn
 innovateer
 
 
-svn:special svn:externals svn:needs-lock
+
 
 
 

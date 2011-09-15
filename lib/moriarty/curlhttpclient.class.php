@@ -35,7 +35,7 @@ class CurlHttpClient extends HttpClient
 
     curl_setopt($curl_handle, CURLOPT_FRESH_CONNECT,TRUE);
     curl_setopt($curl_handle, CURLOPT_RETURNTRANSFER,1);
-
+    curl_setopt($curl_handle, CURLOPT_BINARYTRANSFER, TRUE);
     /**
      * @see http://bugs.typo3.org/view.php?id=4292
      */
@@ -56,6 +56,7 @@ class CurlHttpClient extends HttpClient
     switch($request->method) {
       case 'GET'  : break;
       case 'POST' : curl_setopt($curl_handle, CURLOPT_POST, 1); break;
+      case 'HEAD' : curl_setopt($curl_handle, CURLOPT_NOBODY, 1); break;
       default     : curl_setopt($curl_handle, CURLOPT_CUSTOMREQUEST,strtoupper($request->method));
     }
 
@@ -197,6 +198,4 @@ class CurlHttpClient extends HttpClient
       return array($response_code,$response_header_array,$response_body);
     }
 }
-
-
 ?>

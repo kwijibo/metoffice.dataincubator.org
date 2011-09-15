@@ -3,7 +3,8 @@ require_once dirname(__FILE__) . DIRECTORY_SEPARATOR . 'moriarty.inc.php';
 require_once MORIARTY_ARC_DIR . "ARC2.php";
 require_once MORIARTY_DIR . 'httprequest.class.php';
 require_once MORIARTY_DIR . 'httprequestfactory.class.php';
-
+require_once MORIARTY_DIR . 'simplegraph.class.php';
+require_once MORIARTY_DIR . 'changeset.class.php';
 /**
  * The base class for graphs in a store.
  */
@@ -38,7 +39,7 @@ class Graph {
    * @return HttpResponse
    */
   function apply_changeset($cs) {
-    return $this->apply_changeset_rdfxml( $cs->to_rdfxml());
+    return $this->apply_changeset_turtle( $cs->to_turtle());
   }
 
   /**
@@ -49,6 +50,29 @@ class Graph {
   function apply_versioned_changeset($cs) {
     return $this->apply_versioned_changeset_rdfxml( $cs->to_rdfxml());
   }
+
+    /**
+   * Apply a changeset to the graph
+   * @param string rdfxml the changeset to apply, serialised as RDF/XML
+   * @return HttpResponse
+   */
+  function apply_changeset_turtle($turtle) {
+    if (empty( $this->request_factory) ) {
+      $this->request_factory = new HttpRequestFactory();
+    }
+
+    $uri = $this->uri;
+
+    $request = $this->request_factory->make( 'POST', $uri, $this->credentials);
+    $request->set_accept("*/*");
+    $request->set_content_type("application/vnd.talis.changeset+turtle");
+    $request->set_body( $turtle );
+
+    return $request->execute();
+  }
+
+ 
+
 
   /**
    * Apply a changeset to the graph
@@ -114,7 +138,7 @@ class Graph {
    * @param string turtle the RDF to be submitted, serialised as Turtle
    * @return HttpResponse
    */
-  function submit_turtle($turtle) {
+  function submit_turtle($turtle, $gzip_encode=false) {
     if (empty( $this->request_factory) ) {
       $this->request_factory = new HttpRequestFactory();
     }
@@ -122,8 +146,40 @@ class Graph {
     $request = $this->request_factory->make( 'POST', $uri, $this->credentials);
     $request->set_content_type("text/turtle");
     $request->set_accept("*/*");
-    $request->set_body( $turtle );
+    $request->set_body( $turtle, $gzip_encode);
     return $request->execute();
+  }
+
+  function submit_ntriples_in_batches_from_file($filename,$no_of_lines=500, $callback=false) {
+    $responses = array();
+    $pointer = fopen($filename, 'r');
+    $batch = '';
+    $lineCount=0;
+    while($line =  fgets($pointer)){
+      $batch.=$line;
+      $lineCount++;
+      if($lineCount==$no_of_lines){
+        $response = $this->submit_turtle($batch);
+        $responses[] = $response;
+        if(is_callable($callback)){
+          call_user_func($callback, $response);
+        } else if($response->is_success()===false){
+          return $responses;
+        } 
+
+          $lineCount=0;
+          $batch='';
+        
+      }
+    }
+    if(!empty($batch)){
+      $response=$this->submit_turtle($batch);
+      if(is_callable($callback)){
+          call_user_func($callback, $response);
+      } 
+      $responses[]=$response;
+    }
+    return $responses;
   }
 
   /**
@@ -153,9 +209,6 @@ class Graph {
     }
 
     $request_uri = $this->get_describe_uri($uri, $output);
-    if ($output) {
-      $request_uri .= '&output=' . urlencode($output);
-    }
   
     $request = $this->request_factory->make( 'GET', $request_uri, $this->credentials);
     if ($output) {
@@ -233,9 +286,96 @@ class Graph {
     else if ($response->status_code == 412) {
       return false;
     }
-
-
-
   }
+
+    /**
+   * mirror_from_uri:
+   *
+   * @return array of responses from http requests, and overall success status 
+   * @author Keith Alexander
+   *
+   *
+  **/
+  function mirror_from_uri($url, $rdf_content=false)
+  {
+
+      $return = array(
+        'get_page' => false,
+        'get_copy' => false,
+        'update_data' => false,
+        'success' => false,
+      );
+
+    if (empty( $this->request_factory) ) {
+      $this->request_factory = new HttpRequestFactory();
+    }
+    
+
+    if(!$rdf_content){
+      
+      $web_page_request  = $this->request_factory->make('GET', $url); 
+      $web_page_request->set_accept('application/rdf+xml;q=0.8,text/turtle;q=0.9,*/*;q=0.1');
+      $web_page_response = $web_page_request->execute();
+      $return['get_page'] = $web_page_response;
+      $web_page_content = $web_page_response->body;
+    } else {
+      $web_page_content = $rdf_content;
+      $return['rdf_content'] = $rdf_content;
+    }
+    if($rdf_content OR $web_page_response->is_success() ){
+
+    $newGraph = new SimpleGraph();
+    $newGraph->add_rdf($web_page_content, $url);
+    $jsonGraphContent = $newGraph->to_json();
+    $newGraph->add_resource_triple($url, OPEN_JSON, $jsonGraphContent);
+    $newGraph->skolemise_bnodes(trim($url,'#').'#');
+    $after = $newGraph->get_index();
+    # get previous copy if it exists
+    $cached_page_response = $this->describe($url, 'json');
+    $return['get_copy'] = $cached_page_response;
+            if($cached_page_response->status_code == '200'){
+              $description_index =  json_decode($cached_page_response->body, true);
+              if(isset($description_index[$url]) AND isset($description_index[$url][OPEN_JSON])){
+                $before = json_decode($description_index[$url][OPEN_JSON][0]['value'], 1);
+              } else {
+                $before = false;
+              }
+            } else if( $cached_page_response->status_code == '404' ) {
+              $before = false;
+            } else {
+                return $return;
+            }
+    # build new changeset
+
+    $Changeset = new ChangeSet(array('before' => $before, 'after' => $after, 'creatorName' => 'Graph::mirror_from_uri', 'changeReason' => 'mirroring from '.$url));
+
+    if($Changeset->has_changes()){
+      $return['update_data'] = $this->apply_changeset($Changeset);
+      if($return['update_data']->is_success()){
+        $return['success'] = true;
+      } else if($return['update_data']->status_code=='409'){ # Conflict. some statements already removed.
+        $before_graph = new SimpleGraph($before);
+        $return['reapply_before_triples'] = $this->get_metabox()->submit_turtle($before_graph->to_turtle());
+        if($return['reapply_before_triples']->status_code=='204'){ #Succeeded. No content
+          $return['update_data'] = $this->get_metabox()->apply_changeset($Changeset);
+          $return['success'] = $return['update_data']->is_success();
+        }
+      } else {
+        return $return;
+      } 
+      return $return;
+    } else {
+       $return['success'] = true;
+       return $return;
+    }
+    } else {
+    
+      return $return;
+    }
+  }
+
+
+
+
 }
 ?>

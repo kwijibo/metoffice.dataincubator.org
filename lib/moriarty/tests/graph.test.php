@@ -353,6 +353,61 @@ class GraphTest extends PHPUnit_Framework_TestCase {
     $this->assertTrue( in_array('Accept: */*', $fake_request->get_headers() ) );
   }
 
+  function test_submit_ntriples_from_file_in_batches(){
+    $response = new HttpResponse('202');
+    $graph = $this->getMock('Graph', array('submit_turtle'), array(),'',false ); 
+    $graph->expects($this->exactly(10))
+      ->method('submit_turtle')
+      ->will($this->returnValue($response));
+    $filename = dirname(__FILE__).'/documents/10-ntriples.nt';
+    $result = $graph->submit_ntriples_in_batches_from_file($filename,1);
+    $this->assertEquals(count($result), 10);
+  }
+  function test_submit_ntriples_from_file_in_batches_stop_on_failure(){
+    $response = new HttpResponse('500');
+    $graph = $this->getMock('Graph', array('submit_turtle'), array(),'',false ); 
+    $graph->expects($this->exactly(1))
+      ->method('submit_turtle')
+      ->will($this->returnValue($response));
+    $filename = dirname(__FILE__).'/documents/10-ntriples.nt';
+    $result = $graph->submit_ntriples_in_batches_from_file($filename,1,true);
+    $this->assertEquals(count($result), 1);
+  }
+
+  function test_mirror_from_uri(){
+  
+   $url =  "http://example.org/web-page";
+    $fake_request_factory = new FakeRequestFactory();
+    $webpage_response =  new HttpResponse('200') ;
+    $webpage_response->body = file_get_contents(dirname(__FILE__).DIRECTORY_SEPARATOR.'documents/after.ttl');
+    $fake_webpage_request = new FakeHttpRequest($webpage_response);
+    $fake_request_factory->register('GET',$url, $fake_webpage_request );
+
+
+    $contentbox_copy =  new HttpResponse('200');
+    $contentbox_copy->body = file_get_contents(dirname(__FILE__).DIRECTORY_SEPARATOR.'documents/before.ttl');
+    $fake_copy_request = new FakeHttpRequest($contentbox_copy);
+    $fake_request_factory->register('GET','http://api.talis.com/stores/example/meta?about='.urlencode($url).'&output=json' , $fake_copy_request);
+
+       $postDataResponse =  new HttpResponse('201');
+    $fake_postData_request = new FakeHttpRequest($postDataResponse);
+    $fake_request_factory->register('POST', 'http://api.talis.com/stores/example/meta' , $fake_postData_request );
+
+    $graph = new Graph("http://api.talis.com/stores/example/meta", new FakeCredentials(), $fake_request_factory);
+    $response = $graph->mirror_from_uri($url);
+    $this->assertTrue($fake_webpage_request->was_executed(), "The webpage $url should be retrieved over HTTP");
+    $this->assertTrue($fake_copy_request->was_executed(), "");
+    $this->assertTrue($fake_postData_request->was_executed(), "The data from $url  (and its metadata) should be added to the store by POSTing a document containing changesets to /meta");
+    
+    $expected_response =  array(
+        'get_page' => $webpage_response,
+        'get_copy' => $contentbox_copy,
+        'update_data' => $postDataResponse,
+        'success' => true,
+      );
+     $this->assertEquals($expected_response, $response,""); 
+ 
+  }
 
 }
 

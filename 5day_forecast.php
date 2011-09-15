@@ -44,7 +44,7 @@ function scrape5DayForecast($key){
 
   $page_content = file_get_contents($url);
   $dom = new DomDocument();
-  $dom->loadHTML($page_content);
+  @$dom->loadHTML($page_content);
   $xpath = new DomXpath($dom);
 
 

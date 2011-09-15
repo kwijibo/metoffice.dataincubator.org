@@ -25,7 +25,6 @@ require_once MORIARTY_TEST_DIR . 'jobqueue.test.php';
 require_once MORIARTY_TEST_DIR . 'simplegraph.test.php';
 require_once MORIARTY_TEST_DIR . 'config.test.php';
 require_once MORIARTY_TEST_DIR . 'storecollection.test.php';
-require_once MORIARTY_TEST_DIR . 'storegroup.test.php';
 require_once MORIARTY_TEST_DIR . 'networkresource.test.php';
 require_once MORIARTY_TEST_DIR . 'queryprofile.test.php';
 require_once MORIARTY_TEST_DIR . 'storegroupconfig.test.php';
@@ -42,8 +41,7 @@ require_once MORIARTY_TEST_DIR . 'labeller.test.php';
 require_once MORIARTY_TEST_DIR . 'datatable.test.php';
 require_once MORIARTY_TEST_DIR . 'datatableresult.test.php';
 
-
-error_reporting(E_ALL );
+error_reporting(E_ALL && ~E_STRICT);
 function exceptions_error_handler($severity, $message, $filename, $lineno) {
   if (error_reporting() == 0) {
     return;
@@ -91,10 +89,8 @@ class Moriarty_AllTests
         $suite->addTestSuite('SimpleGraphTest');
         $suite->addTestSuite('ConfigTest');
         $suite->addTestSuite('StoreCollectionTest');
-        $suite->addTestSuite('StoreGroupTest');
         $suite->addTestSuite('NetworkResourceTest');
         $suite->addTestSuite('QueryProfileTest');
-        $suite->addTestSuite('StoreGroupConfigTest');
 //        $suite->addTestSuite('HttpCacheTest');
         $suite->addTestSuite('FacetServiceTest');
         $suite->addTestSuite('SnapshotsTest');
