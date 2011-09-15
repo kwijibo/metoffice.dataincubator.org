@@ -11,8 +11,7 @@ foreach($areas as $key => $label){
 $response =  $metofficeStore->mirror_from_url($url, $turtle);
   var_dump(
     array($key => $label,
-    $response->status_code,
-    $response->body,
+    $response['success'],
   )
   );
 }
