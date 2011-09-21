@@ -1,6 +1,7 @@
 <?php
 date_default_timezone_set('GMT');
 define('gregorian_interval', 'http://reference.data.gov.uk/id/gregorian-interval/');
+define('day', 'http://reference.data.gov.uk/id/day/');
 define('rdf','http://www.w3.org/1999/02/22-rdf-syntax-ns#');
 define('rdfs','http://www.w3.org/2000/01/rdf-schema#');
 define('owl','http://www.w3.org/2002/07/owl#');
@@ -23,6 +24,7 @@ define('metobv', 'http://metoffice.dataincubator.org/observation-sites/');
 define('met_celc', 'http://metoffice.dataincubator.org/temperatures/celcius/');
 define('compass','http://purl.org/net/compass#');
 define('scv', 'http://purl.org/NET/scovo#');
+define('time', 'http://www.w3.org/2006/time#');
 
 require_once 'inc.php';
 //define('MORIARTY_ARC_DIR', 'lib/arc/');
@@ -32,8 +34,10 @@ require_once 'lib/moriarty/simplegraph.class.php';
 require_once 'generate-compass-rdf.php';
 
 
-
-function scrape5DayForecast($key){
+function scrape5DayForecast($key, $output='turtle'){
+  
+  $categoryCodes = unserialize(file_get_contents('weather-categories.codes.serialised.php'));
+  
   // items for use in metadata
   $url = "http://www.metoffice.gov.uk/weather/uk/{$key}_forecast_weather.html";
   $dateTimeNow = date('c');
@@ -132,10 +136,19 @@ function scrape5DayForecast($key){
         $graph->add_literal_triple($timeURI, scv.'min', $date.'T'.$time, false, xsd.'dateTime');
         $graph->add_literal_triple($timeURI, scv.'max', $dateTime3Hrs, false, xsd.'dateTime');
       }
-    
 
-//      var_dump($tds->length, $tds->item($start+1));
-    $categoryURI = metcat.slug($tds->item($start+1)->firstChild->getAttribute('title'));
+      $timeBeginning = preg_replace('@(^.+)(interval)(.+?)/P.+$@','$1instant$3', $timeURI);
+      $graph->add_resource_triple($timeURI, time.'hasBeginning', $timeBeginning);
+      $graph->add_resource_triple($timeBeginning, time.'intervalDuring', day.$date);
+
+
+    $catImgSrc = $tds->item($start+1)->firstChild->getAttribute('src');
+    if(preg_match('/w\d+/', $catImgSrc, $m)){
+      $categoryURI = $categoryCodes[$m[0]];
+    } else {
+      $categoryURI = metcat.slug($tds->item($start+1)->firstChild->getAttribute('title'));
+    }
+
     $temperature = intval($tds->item($start+2)->nodeValue);
     $windDirectionCode = $tds->item($start+3)->nodeValue;
     $windDirection = ($windDirectionCode=='VRB')? met.'variable-wind-direction' : Compass::get_slug($windDirectionCode);
@@ -182,10 +195,9 @@ function scrape5DayForecast($key){
   $graph->add_resource_triple('http://metoffice.dataincubator.org/areas/'.$key.'/forecast-channel', DCT.'source', $url);
   $graph->add_literal_triple(met.'variable-wind-direction' , RDFS_LABEL , 'Variable Wind Direction', 'en-gb');
   $graph->add_literal_triple(met.'variable-wind-direction' , RDFS_COMMENT , 'Variable Wind Direction; when the wind does not prevail from one particular direction.', 'en-gb');
-  return $graph->to_turtle();
-
+  
+  if($output='turtle') return $graph->to_turtle();
+  else return $graph->to_json();
 }
-
- //echo scrape5DayForecast('os/kirkwall');
 
 ?>

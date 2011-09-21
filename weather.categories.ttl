@@ -1,223 +1,247 @@
-@base <http://metoffice.dataincubator.org/areas/> .
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix ns0: <http://metoffice.dataincubator.org/categories/> .
+@prefix ns1: <http://purl.org/ns/meteo#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
-@prefix owl: <http://www.w3.org/2002/07/owl#> .
-@prefix met: <http://metoffice.dataincubator.org/vocabs/metoffice/> .
-@prefix meteo: <http://purl.org/ns/meteo#> .
-@prefix dct: <http://purl.org/dc/terms/> .
-@prefix spatialrelations: <http://data.ordnancesurvey.co.uk/ontology/spatialrelations/> .
-@prefix foaf:     <http://xmlns.com/foaf/0.1/> .
-@prefix skos:     <http://www.w3.org/2004/02/skos/core#> .
-@prefix geo:      <http://www.w3.org/2003/01/geo/wgs84_pos#> .
-@prefix geonames: <http://www.geonames.org/ontology#> .
-@prefix ov:       <http://open.vocab.org/terms/> .
-@prefix dbpedia:  <http://dbpedia.org/resource/> .
-@prefix xsd:      <http://www.w3.org/2001/XMLSchema#> .
-@prefix admingov: <http://statistics.data.gov.uk/def/administrative-geography/> .
-@prefix metvis: <http://metoffice.dataincubator.org/categories/visibility/> .
-@prefix metcat: <http://metoffice.dataincubator.org/categories/> .
-@prefix compass: <http://purl.org/net/compass#> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix ov: <http://open.vocab.org/terms/> .
 
-metcat:NotAvailable 
-	 a meteo:Category ; 
- 	 rdfs:label "Not available"@en ; 
-	 skos:inScheme <http://metoffice.dataincubator.org/categories> ; 
- 	 ov:icon <http://www.metoffice.gov.uk/weather/images/symbols/NA.gif>  . 
+ns0:NotAvailable rdf:type ns1:Category ;
+                 rdfs:label "Not available"@en-gb ;
+                 skos:inScheme <http://metoffice.dataincubator.org/categories/> ;
+                 ov:icon <http://www.metoffice.gov.uk/weather/images/symbols/NA.gif> .
 
- metcat:ClearSky_night 
-	 a meteo:Category ; 
- 	 rdfs:label "Clear sky (night)"@en ; 
-	 skos:inScheme <http://metoffice.dataincubator.org/categories> ; 
- 	 ov:icon <http://www.metoffice.gov.uk/weather/images/symbols/w0x15.gif>  . 
+ns0:ClearSky_night rdf:type ns1:Category ;
+                   rdfs:label "Clear sky (night)"@en-gb ;
+                   skos:inScheme <http://metoffice.dataincubator.org/categories/> ;
+                   ov:icon <http://www.metoffice.gov.uk/weather/images/symbols/w0x15.gif> .
 
- metcat:Sunny 
-	 a meteo:Category ; 
- 	 rdfs:label "Sunny"@en ; 
-	 skos:inScheme <http://metoffice.dataincubator.org/categories> ; 
- 	 ov:icon <http://www.metoffice.gov.uk/weather/images/symbols/w1x15.gif>  . 
+ns0:Sunny rdf:type ns1:Category ;
+          rdfs:label "Sunny"@en-gb ;
+          skos:inScheme <http://metoffice.dataincubator.org/categories/> ;
+          ov:icon <http://www.metoffice.gov.uk/weather/images/symbols/w1x15.gif> .
 
- metcat:PartlyCloudy_night 
-	 a meteo:Category ; 
- 	 rdfs:label "Partly cloudy (night)"@en ; 
-	 skos:inScheme <http://metoffice.dataincubator.org/categories> ; 
- 	 ov:icon <http://www.metoffice.gov.uk/weather/images/symbols/w2x15.gif>  . 
+ns0:PartlyCloudy_night rdf:type ns1:Category ;
+                       rdfs:label "Partly cloudy (night)"@en-gb ;
+                       skos:inScheme <http://metoffice.dataincubator.org/categories/> ;
+                       ov:icon <http://www.metoffice.gov.uk/weather/images/symbols/w2x15.gif> .
 
- metcat:SunnyIntervals 
-	 a meteo:Category ; 
- 	 rdfs:label "Sunny intervals"@en ; 
-	 skos:inScheme <http://metoffice.dataincubator.org/categories> ; 
- 	 ov:icon <http://www.metoffice.gov.uk/weather/images/symbols/w3x15.gif>  . 
+ns0:SunnyIntervals rdf:type ns1:Category ;
+                   rdfs:label "Sunny intervals"@en-gb ;
+                   skos:inScheme <http://metoffice.dataincubator.org/categories/> ;
+                   ov:icon <http://www.metoffice.gov.uk/weather/images/symbols/w3x15.gif> .
 
- metcat:Dust 
-	 a meteo:Category ; 
- 	 rdfs:label "Dust"@en ; 
-	 skos:inScheme <http://metoffice.dataincubator.org/categories> ; 
- 	 ov:icon <http://www.metoffice.gov.uk/weather/images/symbols/w4x15.gif>  . 
+ns0:Dust rdf:type ns1:Category ;
+         rdfs:label "Dust"@en-gb ;
+         skos:inScheme <http://metoffice.dataincubator.org/categories/> ;
+         ov:icon <http://www.metoffice.gov.uk/weather/images/symbols/w4x15.gif> .
 
- metcat:Mist 
-	 a meteo:Category ; 
- 	 rdfs:label "Mist"@en ; 
-	 skos:inScheme <http://metoffice.dataincubator.org/categories> ; 
- 	 ov:icon <http://www.metoffice.gov.uk/weather/images/symbols/w5x15.gif>  . 
+ns0:Mist rdf:type ns1:Category ;
+         rdfs:label "Mist"@en-gb ;
+         skos:inScheme <http://metoffice.dataincubator.org/categories/> ;
+         ov:icon <http://www.metoffice.gov.uk/weather/images/symbols/w5x15.gif> .
 
- metcat:Fog 
-	 a meteo:Category ; 
- 	 rdfs:label "Fog"@en ; 
-	 skos:inScheme <http://metoffice.dataincubator.org/categories> ; 
- 	 ov:icon <http://www.metoffice.gov.uk/weather/images/symbols/w6x15.gif>  . 
+ns0:Fog rdf:type ns1:Category ;
+        rdfs:label "Fog"@en-gb ;
+        skos:inScheme <http://metoffice.dataincubator.org/categories/> ;
+        ov:icon <http://www.metoffice.gov.uk/weather/images/symbols/w6x15.gif> .
 
- metcat:Haze 
-	 a meteo:Category ; 
- 	 rdfs:label "Haze"@en ; 
-	 skos:inScheme <http://metoffice.dataincubator.org/categories> ; 
- 	 ov:icon <http://www.metoffice.gov.uk/weather/images/symbols/w33x15.gif>  . 
+ns0:Haze rdf:type ns1:Category ;
+         rdfs:label "Haze"@en-gb ;
+         skos:inScheme <http://metoffice.dataincubator.org/categories/> ;
+         ov:icon <http://www.metoffice.gov.uk/weather/images/symbols/w33x15.gif> .
 
- metcat:Medium-levelCloud 
-	 a meteo:Category ; 
- 	 rdfs:label "Medium-level cloud"@en ; 
-	 skos:inScheme <http://metoffice.dataincubator.org/categories> ; 
- 	 ov:icon <http://www.metoffice.gov.uk/weather/images/symbols/w7x15.gif>  . 
+ns0:Medium-levelCloud rdf:type ns1:Category ;
+                      rdfs:label "Medium-level cloud"@en-gb ;
+                      skos:inScheme <http://metoffice.dataincubator.org/categories/> ;
+                      ov:icon <http://www.metoffice.gov.uk/weather/images/symbols/w7x15.gif> .
 
- metcat:Low-levelCloud 
-	 a meteo:Category ; 
- 	 rdfs:label "Low-level cloud"@en ; 
-	 skos:inScheme <http://metoffice.dataincubator.org/categories> ; 
- 	 ov:icon <http://www.metoffice.gov.uk/weather/images/symbols/w8x15.gif>  . 
+ns0:Low-levelCloud rdf:type ns1:Category ;
+                   rdfs:label "Low-level cloud"@en-gb ;
+                   skos:inScheme <http://metoffice.dataincubator.org/categories/> ;
+                   ov:icon <http://www.metoffice.gov.uk/weather/images/symbols/w8x15.gif> .
 
- metcat:LightRainShower_night 
-	 a meteo:Category ; 
- 	 rdfs:label "Light rain shower (night)"@en ; 
-	 skos:inScheme <http://metoffice.dataincubator.org/categories> ; 
- 	 ov:icon <http://www.metoffice.gov.uk/weather/images/symbols/w9x15.gif>  . 
+ns0:LightRainShower_night rdf:type ns1:Category ;
+                          rdfs:label "Light rain shower (night)"@en-gb ;
+                          skos:inScheme <http://metoffice.dataincubator.org/categories/> ;
+                          ov:icon <http://www.metoffice.gov.uk/weather/images/symbols/w9x15.gif> ;
+                          skos:broader ns0:LightRainShower .
 
- metcat:LightRainShower_day 
-	 a meteo:Category ; 
- 	 rdfs:label "Light rain shower (day)"@en ; 
-	 skos:inScheme <http://metoffice.dataincubator.org/categories> ; 
- 	 ov:icon <http://www.metoffice.gov.uk/weather/images/symbols/w10x15.gif>  . 
+ns0:LightRainShower skos:narrower ns0:LightRainShower_night ,
+                                  ns0:LightRainShower_day ;
+                    rdf:type ns1:Category ;
+                    rdfs:label "Light rain shower"@en-gb ;
+                    skos:inScheme <http://metoffice.dataincubator.org/categories/> ;
+                    skos:broader ns0:LightRain .
 
- metcat:Drizzle 
-	 a meteo:Category ; 
- 	 rdfs:label "Drizzle"@en ; 
-	 skos:inScheme <http://metoffice.dataincubator.org/categories> ; 
- 	 ov:icon <http://www.metoffice.gov.uk/weather/images/symbols/w11x15.gif>  . 
+ns0:LightRain skos:narrower ns0:LightRainShower ;
+              rdf:type ns1:Category ;
+              rdfs:label "Light rain"@en-gb ;
+              skos:inScheme <http://metoffice.dataincubator.org/categories/> ;
+              ov:icon <http://www.metoffice.gov.uk/weather/images/symbols/w12x15.gif> .
 
- metcat:LightRain 
-	 a meteo:Category ; 
- 	 rdfs:label "Light rain"@en ; 
-	 skos:inScheme <http://metoffice.dataincubator.org/categories> ; 
- 	 ov:icon <http://www.metoffice.gov.uk/weather/images/symbols/w12x15.gif>  . 
+ns0:LightRainShower_day rdf:type ns1:Category ;
+                        rdfs:label "Light rain shower (day)"@en-gb ;
+                        skos:inScheme <http://metoffice.dataincubator.org/categories/> ;
+                        ov:icon <http://www.metoffice.gov.uk/weather/images/symbols/w10x15.gif> ;
+                        skos:broader ns0:LightRainShower .
 
- metcat:HeavyRainShower_night 
-	 a meteo:Category ; 
- 	 rdfs:label "Heavy rain shower (night)"@en ; 
-	 skos:inScheme <http://metoffice.dataincubator.org/categories> ; 
- 	 ov:icon <http://www.metoffice.gov.uk/weather/images/symbols/w13x15.gif>  . 
+ns0:Drizzle rdf:type ns1:Category ;
+            rdfs:label "Drizzle"@en-gb ;
+            skos:inScheme <http://metoffice.dataincubator.org/categories/> ;
+            ov:icon <http://www.metoffice.gov.uk/weather/images/symbols/w11x15.gif> .
 
- metcat:HeavyRainShower_day 
-	 a meteo:Category ; 
- 	 rdfs:label "Heavy rain shower (day)"@en ; 
-	 skos:inScheme <http://metoffice.dataincubator.org/categories> ; 
- 	 ov:icon <http://www.metoffice.gov.uk/weather/images/symbols/w14x15.gif>  . 
+ns0:HeavyRainShower_night rdf:type ns1:Category ;
+                          rdfs:label "Heavy rain shower (night)"@en-gb ;
+                          skos:inScheme <http://metoffice.dataincubator.org/categories/> ;
+                          ov:icon <http://www.metoffice.gov.uk/weather/images/symbols/w13x15.gif> ;
+                          skos:broader ns0:HeavyRainShower .
 
- metcat:HeavyRain 
-	 a meteo:Category ; 
- 	 rdfs:label "Heavy rain"@en ; 
-	 skos:inScheme <http://metoffice.dataincubator.org/categories> ; 
- 	 ov:icon <http://www.metoffice.gov.uk/weather/images/symbols/w15x15.gif>  . 
+ns0:HeavyRainShower skos:narrower ns0:HeavyRainShower_night ,
+                                  ns0:HeavyRainShower_day ;
+                    rdf:type ns1:Category ;
+                    rdfs:label "Heavy rain shower"@en-gb ;
+                    skos:inScheme <http://metoffice.dataincubator.org/categories/> ;
+                    skos:broader ns0:HeavyRain .
 
- metcat:ThunderyShower_night 
-	 a meteo:Category ; 
- 	 rdfs:label "Thundery shower (night)"@en ; 
-	 skos:inScheme <http://metoffice.dataincubator.org/categories> ; 
- 	 ov:icon <http://www.metoffice.gov.uk/weather/images/symbols/w28x15.gif>  . 
+ns0:HeavyRain skos:narrower ns0:HeavyRainShower ;
+              rdf:type ns1:Category ;
+              rdfs:label "Heavy rain"@en-gb ;
+              skos:inScheme <http://metoffice.dataincubator.org/categories/> ;
+              ov:icon <http://www.metoffice.gov.uk/weather/images/symbols/w15x15.gif> .
 
- metcat:ThunderyShower_day 
-	 a meteo:Category ; 
- 	 rdfs:label "Thundery shower (day)"@en ; 
-	 skos:inScheme <http://metoffice.dataincubator.org/categories> ; 
- 	 ov:icon <http://www.metoffice.gov.uk/weather/images/symbols/w29x15.gif>  . 
+ns0:HeavyRainShower_day rdf:type ns1:Category ;
+                        rdfs:label "Heavy rain shower (day)"@en-gb ;
+                        skos:inScheme <http://metoffice.dataincubator.org/categories/> ;
+                        ov:icon <http://www.metoffice.gov.uk/weather/images/symbols/w14x15.gif> ;
+                        skos:broader ns0:HeavyRainShower .
 
- metcat:ThunderStorm 
-	 a meteo:Category ; 
- 	 rdfs:label "Thunder storm"@en ; 
-	 skos:inScheme <http://metoffice.dataincubator.org/categories> ; 
- 	 ov:icon <http://www.metoffice.gov.uk/weather/images/symbols/w30x15.gif>  . 
+ns0:ThunderyShower_night rdf:type ns1:Category ;
+                         rdfs:label "Thundery shower (night)"@en-gb ;
+                         skos:inScheme <http://metoffice.dataincubator.org/categories/> ;
+                         ov:icon <http://www.metoffice.gov.uk/weather/images/symbols/w28x15.gif> ;
+                         skos:broader ns0:ThunderyShower .
 
- metcat:TropicalStorm 
-	 a meteo:Category ; 
- 	 rdfs:label "Tropical storm"@en ; 
-	 skos:inScheme <http://metoffice.dataincubator.org/categories> ; 
- 	 ov:icon <http://www.metoffice.gov.uk/weather/images/symbols/w31x15.gif>  . 
+ns0:ThunderyShower skos:narrower ns0:ThunderyShower_night ,
+                                 ns0:ThunderyShower_day ;
+                   rdf:type ns1:Category ;
+                   rdfs:label "Thundery shower"@en-gb ;
+                   skos:inScheme <http://metoffice.dataincubator.org/categories/> ;
+                   skos:broader ns0:Thundery .
 
- metcat:SleetShower_night 
-	 a meteo:Category ; 
- 	 rdfs:label "Sleet shower (night)"@en ; 
-	 skos:inScheme <http://metoffice.dataincubator.org/categories> ; 
- 	 ov:icon <http://www.metoffice.gov.uk/weather/images/symbols/w16x15.gif>  . 
+ns0:Thundery skos:narrower ns0:ThunderyShower .
 
- metcat:SleetShower_day 
-	 a meteo:Category ; 
- 	 rdfs:label "Sleet shower (day)"@en ; 
-	 skos:inScheme <http://metoffice.dataincubator.org/categories> ; 
- 	 ov:icon <http://www.metoffice.gov.uk/weather/images/symbols/w17x15.gif>  . 
+ns0:ThunderyShower_day rdf:type ns1:Category ;
+                       rdfs:label "Thundery shower (day)"@en-gb ;
+                       skos:inScheme <http://metoffice.dataincubator.org/categories/> ;
+                       ov:icon <http://www.metoffice.gov.uk/weather/images/symbols/w29x15.gif> ;
+                       skos:broader ns0:ThunderyShower .
 
- metcat:Sleet 
-	 a meteo:Category ; 
- 	 rdfs:label "Sleet"@en ; 
-	 skos:inScheme <http://metoffice.dataincubator.org/categories> ; 
- 	 ov:icon <http://www.metoffice.gov.uk/weather/images/symbols/w18x15.gif>  . 
+ns0:ThunderStorm rdf:type ns1:Category ;
+                 rdfs:label "Thunder storm"@en-gb ;
+                 skos:inScheme <http://metoffice.dataincubator.org/categories/> ;
+                 ov:icon <http://www.metoffice.gov.uk/weather/images/symbols/w30x15.gif> .
 
- metcat:HailShower_night 
-	 a meteo:Category ; 
- 	 rdfs:label "Hail shower (night)"@en ; 
-	 skos:inScheme <http://metoffice.dataincubator.org/categories> ; 
- 	 ov:icon <http://www.metoffice.gov.uk/weather/images/symbols/w19x15.gif>  . 
+ns0:TropicalStorm rdf:type ns1:Category ;
+                  rdfs:label "Tropical storm"@en-gb ;
+                  skos:inScheme <http://metoffice.dataincubator.org/categories/> ;
+                  ov:icon <http://www.metoffice.gov.uk/weather/images/symbols/w31x15.gif> .
 
- metcat:HailShower_day 
-	 a meteo:Category ; 
- 	 rdfs:label "Hail shower (day)"@en ; 
-	 skos:inScheme <http://metoffice.dataincubator.org/categories> ; 
- 	 ov:icon <http://www.metoffice.gov.uk/weather/images/symbols/w20x15.gif>  . 
+ns0:SleetShower_night rdf:type ns1:Category ;
+                      rdfs:label "Sleet shower (night)"@en-gb ;
+                      skos:inScheme <http://metoffice.dataincubator.org/categories/> ;
+                      ov:icon <http://www.metoffice.gov.uk/weather/images/symbols/w16x15.gif> ;
+                      skos:broader ns0:SleetShower .
 
- metcat:Hail 
-	 a meteo:Category ; 
- 	 rdfs:label "Hail"@en ; 
-	 skos:inScheme <http://metoffice.dataincubator.org/categories> ; 
- 	 ov:icon <http://www.metoffice.gov.uk/weather/images/symbols/w21x15.gif>  . 
+ns0:SleetShower skos:narrower ns0:SleetShower_night ,
+                              ns0:SleetShower_day ;
+                rdf:type ns1:Category ;
+                rdfs:label "Sleet shower"@en-gb ;
+                skos:inScheme <http://metoffice.dataincubator.org/categories/> ;
+                skos:broader ns0:Sleet .
 
- metcat:LightSnowShower_night 
-	 a meteo:Category ; 
- 	 rdfs:label "Light snow shower (night)"@en ; 
-	 skos:inScheme <http://metoffice.dataincubator.org/categories> ; 
- 	 ov:icon <http://www.metoffice.gov.uk/weather/images/symbols/w22x15.gif>  . 
+ns0:Sleet skos:narrower ns0:SleetShower ;
+          rdf:type ns1:Category ;
+          rdfs:label "Sleet"@en-gb ;
+          skos:inScheme <http://metoffice.dataincubator.org/categories/> ;
+          ov:icon <http://www.metoffice.gov.uk/weather/images/symbols/w18x15.gif> .
 
- metcat:LightSnowShower_day 
-	 a meteo:Category ; 
- 	 rdfs:label "Light snow shower (day)"@en ; 
-	 skos:inScheme <http://metoffice.dataincubator.org/categories> ; 
- 	 ov:icon <http://www.metoffice.gov.uk/weather/images/symbols/w23x15.gif>  . 
+ns0:SleetShower_day rdf:type ns1:Category ;
+                    rdfs:label "Sleet shower (day)"@en-gb ;
+                    skos:inScheme <http://metoffice.dataincubator.org/categories/> ;
+                    ov:icon <http://www.metoffice.gov.uk/weather/images/symbols/w17x15.gif> ;
+                    skos:broader ns0:SleetShower .
 
- metcat:LightSnow 
-	 a meteo:Category ; 
- 	 rdfs:label "Light snow"@en ; 
-	 skos:inScheme <http://metoffice.dataincubator.org/categories> ; 
- 	 ov:icon <http://www.metoffice.gov.uk/weather/images/symbols/w24x15.gif>  . 
+ns0:HailShower_night rdf:type ns1:Category ;
+                     rdfs:label "Hail shower (night)"@en-gb ;
+                     skos:inScheme <http://metoffice.dataincubator.org/categories/> ;
+                     ov:icon <http://www.metoffice.gov.uk/weather/images/symbols/w19x15.gif> ;
+                     skos:broader ns0:HailShower .
 
- metcat:HeavySnowShower_night 
-	 a meteo:Category ; 
- 	 rdfs:label "Heavy snow shower (night)"@en ; 
-	 skos:inScheme <http://metoffice.dataincubator.org/categories> ; 
- 	 ov:icon <http://www.metoffice.gov.uk/weather/images/symbols/w25x15.gif>  . 
+ns0:HailShower skos:narrower ns0:HailShower_night ,
+                             ns0:HailShower_day ;
+               rdf:type ns1:Category ;
+               rdfs:label "Hail shower"@en-gb ;
+               skos:inScheme <http://metoffice.dataincubator.org/categories/> ;
+               skos:broader ns0:Hail .
 
- metcat:HeavySnowShower_day 
-	 a meteo:Category ; 
- 	 rdfs:label "Heavy snow shower (day)"@en ; 
-	 skos:inScheme <http://metoffice.dataincubator.org/categories> ; 
- 	 ov:icon <http://www.metoffice.gov.uk/weather/images/symbols/w26x15.gif>  . 
+ns0:Hail skos:narrower ns0:HailShower ;
+         rdf:type ns1:Category ;
+         rdfs:label "Hail"@en-gb ;
+         skos:inScheme <http://metoffice.dataincubator.org/categories/> ;
+         ov:icon <http://www.metoffice.gov.uk/weather/images/symbols/w21x15.gif> .
 
- metcat:HeavySnow 
-	 a meteo:Category ; 
- 	 rdfs:label "Heavy snow"@en ; 
-	 skos:inScheme <http://metoffice.dataincubator.org/categories> ; 
- 	 ov:icon <http://www.metoffice.gov.uk/weather/images/symbols/w27x15.gif>  .
+ns0:HailShower_day rdf:type ns1:Category ;
+                   rdfs:label "Hail shower (day)"@en-gb ;
+                   skos:inScheme <http://metoffice.dataincubator.org/categories/> ;
+                   ov:icon <http://www.metoffice.gov.uk/weather/images/symbols/w20x15.gif> ;
+                   skos:broader ns0:HailShower .
+
+ns0:LightSnowShower_night rdf:type ns1:Category ;
+                          rdfs:label "Light snow shower (night)"@en-gb ;
+                          skos:inScheme <http://metoffice.dataincubator.org/categories/> ;
+                          ov:icon <http://www.metoffice.gov.uk/weather/images/symbols/w22x15.gif> ;
+                          skos:broader ns0:LightSnowShower .
+
+ns0:LightSnowShower skos:narrower ns0:LightSnowShower_night ,
+                                  ns0:LightSnowShower_day ;
+                    rdf:type ns1:Category ;
+                    rdfs:label "Light snow shower"@en-gb ;
+                    skos:inScheme <http://metoffice.dataincubator.org/categories/> ;
+                    skos:broader ns0:LightSnow .
+
+ns0:LightSnow skos:narrower ns0:LightSnowShower ;
+              rdf:type ns1:Category ;
+              rdfs:label "Light snow"@en-gb ;
+              skos:inScheme <http://metoffice.dataincubator.org/categories/> ;
+              ov:icon <http://www.metoffice.gov.uk/weather/images/symbols/w24x15.gif> .
+
+ns0:LightSnowShower_day rdf:type ns1:Category ;
+                        rdfs:label "Light snow shower (day)"@en-gb ;
+                        skos:inScheme <http://metoffice.dataincubator.org/categories/> ;
+                        ov:icon <http://www.metoffice.gov.uk/weather/images/symbols/w23x15.gif> ;
+                        skos:broader ns0:LightSnowShower .
+
+ns0:HeavySnowShower_night rdf:type ns1:Category ;
+                          rdfs:label "Heavy snow shower (night)"@en-gb ;
+                          skos:inScheme <http://metoffice.dataincubator.org/categories/> ;
+                          ov:icon <http://www.metoffice.gov.uk/weather/images/symbols/w25x15.gif> ;
+                          skos:broader ns0:HeavySnowShower .
+
+ns0:HeavySnowShower skos:narrower ns0:HeavySnowShower_night ,
+                                  ns0:HeavySnowShower_day ;
+                    rdf:type ns1:Category ;
+                    rdfs:label "Heavy snow shower"@en-gb ;
+                    skos:inScheme <http://metoffice.dataincubator.org/categories/> ;
+                    skos:broader ns0:HeavySnow .
+
+ns0:HeavySnow skos:narrower ns0:HeavySnowShower ;
+              rdf:type ns1:Category ;
+              rdfs:label "Heavy snow"@en-gb ;
+              skos:inScheme <http://metoffice.dataincubator.org/categories/> ;
+              ov:icon <http://www.metoffice.gov.uk/weather/images/symbols/w27x15.gif> .
+
+ns0:HeavySnowShower_day rdf:type ns1:Category ;
+                        rdfs:label "Heavy snow shower (day)"@en-gb ;
+                        skos:inScheme <http://metoffice.dataincubator.org/categories/> ;
+                        ov:icon <http://www.metoffice.gov.uk/weather/images/symbols/w26x15.gif> ;
+                        skos:broader ns0:HeavySnowShower .

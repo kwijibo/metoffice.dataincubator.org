@@ -2,14 +2,42 @@
 
 require '5day_forecast.php';
 require 'areas.inc.php';
+require 'request.class.php';
+$Request = new Request();
 
-if(isset($_GET['key'])){
 
-  $turtle = scrape5DayForecast($_GET['key']);
-  $metofficeStore->get_metabox()->submit_turtle($turtle);
+function serveTurtle($turtle){
   header("Content-type:text/turtle");
   echo $turtle;
   die;
+}
+
+function serveJson($json){
+  header("Content-type:application/json");
+  echo $json;
+  die;
+}
+
+if(isset($_GET['key'])){
+
+  $turtle = scrape5DayForecast($_GET['key'], 'turtle');
+  $metofficeStore->get_metabox()->submit_turtle($turtle);
+
+  foreach($Request->getAcceptTypes() as $mimetype){
+    if(strpos($mimetype, 'turtle')){
+      serveTurtle($turtle);
+    } else if(strpos($mimetype, 'json')){
+      $graph = new SimpleGraph();
+      $graph->add_turtle($turtle);
+      $json = $graph->to_json(); 
+      serveJson($json);
+    }
+  }
+
+  header("Content-Type: text/plain");
+  echo $turtle;
+  die;
+
 } else {
 ?>
 <!DOCTYPE HTML>
